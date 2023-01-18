@@ -1,0 +1,30 @@
+#+title: README
+#+author: Connor Feeley
+#+date: 2022-12-11
+* ~kasa.el~
+This package provides an interface between Emacs and the [[https://github.com/python-kasa/python-kasa][python-kasa]] library for controlling TP-Link Kasa smart home devices.
+
+** Future Work
+*** STRT Rough Implementation Notes
+- Query python package for available devices
+- Have a function to interactively select which device and plug to:
+  + Toggle
+  + Enable
+  + Disable
+  + Power cycle
+- Allow configuring a default target:
+    #+begin_src emacs-lisp
+    (defvar kasa-default-target
+    '("192.168.0.240" . "Ultrix-2NS")
+    "Default power bar and plug to act on: (BAR . PLUG)")
+    #+end_src
+  + My personal ~pwrbar~ script:
+      #+begin_src shell
+      kasa --host 192.168.0.240 --type strip $POWER --name "Ultrix-2NS"
+      #+end_src
+- Should have a ~kasa-power-cycle-default~ interactive function which power cycles the ~kasa-default-target~
+
+** License
+#+embed: ../LICENCE :description MIT licence file
+* Homepage
+/Note: this repository is mirrored to [[https://github.com/connorfeeley/kasa.el][GitHub]], though the canonical location is on [[https://sr.ht/~cfeeley/kasa.el/][Sourcehut]]./
