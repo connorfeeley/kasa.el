@@ -23,7 +23,6 @@ This package provides an interface between Emacs and the [[https://github.com/py
       kasa --host 192.168.0.240 --type strip $POWER --name "Ultrix-2NS"
       #+end_src
 - Should have a ~kasa-power-cycle-default~ interactive function which power cycles the ~kasa-default-target~
-
 ** License
 #+embed: ../LICENCE :description MIT licence file
 * Homepage
