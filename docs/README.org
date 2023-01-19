@@ -25,6 +25,8 @@ This package provides an interface between Emacs and the [[https://github.com/py
       #+end_src
 - Should have a ~kasa-power-cycle-default~ interactive function which power cycles the ~kasa-default-target~
 
+*** TODO TRAMP support
+
 ** License
 #+begin_quote
 MIT License
