@@ -49,50 +49,58 @@
 ;;; ----------------------------------------------------------------------------
 ;;; Customization options
 ;;; ----------------------------------------------------------------------------
-(defgroup kasa nil "Control TP-Link Kasa smart home devices." :group 'hardware)
-(defcustom kasa-python-executable "kasa"
+(defgroup kasa nil
+  "Control TP-Link Kasa smart home devices."
+  :prefix "kasa-"
+  :group 'hardware)
+(defcustom kasa-python-executable-name "kasa"
   "The executable to use (provided by python-kasa)."
   :type 'string
   :group 'kasa)
 (defcustom kasa-enable-tramp t
-  "If `kasa-python-executable' should be run on the remote hosts.
+  "If `kasa-python-executable-name' should be run on the remote hosts.
 The remote host is determined by `default-directory'."
   :type 'boolean
   :group 'kasa)
-(defcustom kasa-default-target (list 'host "192.168.0.240" 'type "strip" 'plug "Ultrix-2NS")
+(defcustom kasa-default-target
+  '(:host "192.168.0.240"
+    :device-type "strip"
+    :name "Ultrix-2NS")
   "Default target to operate on."
-  :type 'plist
-  :options '('host "string" 'type "string" 'plug "string")
+  :type '(plist :options ((:host (string :tag "Host"))
+                          (:device-type (string :tag "Type"))
+                          (:name (string :tag "Name")))
+          :key-type (sexp :tag "Key")
+          :value-type (string :tag "Description"))
   :group 'kasa)
 
 ;;; ----------------------------------------------------------------------------
 ;;; Core functions
 ;;; ----------------------------------------------------------------------------
-(defun kasa--exec ()
-  "Get the kasa executable to use, defined by `kasa-python-executable'.
+(defun kasa--executable ()
+  "Get the kasa executable to use, defined by `kasa-python-executable-name'.
 If `kasa-enable-tramp' is non-nil, and `default-directory' is on a remote host,
 then the executable will be run on that host."
-  (executable-find kasa-python-executable kasa-enable-tramp))
+  (executable-find kasa-python-executable-name kasa-enable-tramp))
 
 (defun kasa--run (args)
   "Run python-kasa with ARGS."
-  (apply #'process-lines (kasa--exec) args))
+  (apply #'process-lines (kasa--executable) args))
 
 (defun kasa-toggle-default (state)
   "Toggle the power state of the default target.
-If STATE is non-nil, turn the target on. Ff STATE is nil, turn the target off."
+If STATE is non-nil, turn the target on. If STATE is nil, turn the target off."
   (interactive)
   (let* ((host (plist-get kasa-default-target 'host))
-         (type (plist-get kasa-default-target 'type))
-         (plug (plist-get kasa-default-target 'plug)))
-    (kasa--run (list "--host" host "--type" type (if state "on" "off") "--name" plug))))
+         (type (plist-get kasa-default-target 'device-type))
+         (name (plist-get kasa-default-target 'name)))
+    (kasa--run (list "--host" host "--type" device-type (if state "on" "off") "--name" name))))
 
 ;;; ----------------------------------------------------------------------------
 ;;; Interactive convenience functions
 ;;; ----------------------------------------------------------------------------
-(defun kasa-on-default () "Turn the default target on." (interactive) (kasa-toggle-default t))
-
-(defun kasa-off-default () "Turn the default target off." (interactive) (kasa-toggle-default nil))
+(defmacro kasa-on-default () `(kasa-toggle-default t) "Turn the default target on." )
+(defmacro kasa-off-default () `(kasa-toggle-default nil) "Turn the default target off." )
 
 (defun kasa-cycle-default ()
   "Cycle the power state of the default target (off, then on)."
