@@ -87,14 +87,21 @@ then the executable will be run on that host."
   "Run python-kasa with ARGS."
   (apply #'process-lines (kasa--executable) args))
 
-(defun kasa-toggle-default (state)
+(defun kasa-toggle-default (&optional state)
   "Toggle the power state of the default target.
 If STATE is non-nil, turn the target on. If STATE is nil, turn the target off."
   (interactive)
-  (let* ((host (plist-get kasa-default-target 'host))
-         (type (plist-get kasa-default-target 'device-type))
-         (name (plist-get kasa-default-target 'name)))
-    (kasa--run (list "--host" host "--type" device-type (if state "on" "off") "--name" name))))
+  (let* ((host (plist-get kasa-default-target :host))
+         (type (plist-get kasa-default-target :device-type))
+         (name (plist-get kasa-default-target :name))
+         (state-string (cond ((not state) "toggle")
+                             ((eq state 'on) "on")
+                             ((eq state 'off) "off"))))
+    (kasa--run (list
+                "--host" host
+                "--type" type
+                state-string
+                "--name" name))))
 
 ;;; ----------------------------------------------------------------------------
 ;;; Interactive convenience functions
